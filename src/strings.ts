@@ -87,8 +87,9 @@ function gmailMatchHost(name: string): MatchGMailRS {
 	}
 	return MatchGMailRS.Success;
 };
-//如果符合 google gmail 格式 返回 0 否則 返回錯誤代碼
 /*
+	驗證 字符串是否符合 gmail 格式 要求
+
 	用戶名@主機名
 	用戶名
 		字符[a-zA-Z0-9]長度爲 [6,30] 
@@ -117,3 +118,75 @@ export function MatchGMail(str: string): MatchGMailRS {
 	}
 	return gmailMatchHost(strs[1]);
 }
+
+//將字符串中的 html 保留字 轉義
+export function HtmlEncode(str: string): string {
+	if (!str || str.length == 0) {
+		return "";
+	}
+	str = str.replace(/&/g, "&amp;");
+	str = str.replace(/</g, "&lt;");
+	str = str.replace(/>/g, "&gt;");
+	str = str.replace(/ /g, "&nbsp;");
+	str = str.replace(/\'/g, "&#39;");
+	str = str.replace(/\"/g, "&quot;");
+	return str;
+};
+//將 HtmlEncode 解碼
+export function HtmlDecode(str: string): string {
+	if (!str || str.length == 0) {
+		return "";
+	}
+	str = str.replace(/&amp;/g, "&");
+	str = str.replace(/&lt;/g, "<");
+	str = str.replace(/&gt;/g, ">");
+	str = str.replace(/&nbsp;/g, " ");
+	str = str.replace(/&#39;/g, "\'");
+	str = str.replace(/&quot;/g, "\"");
+	return str;
+};
+
+/*
+	將日期 Date 轉化爲指定格式的 字符串
+
+	fmt yyyy-mm-dd HH:MM:SS
+*/
+export function FormatDate(d: Date, fmt: string): string {
+	const o = [
+		{
+			l:"m+",
+			r:(d.getMonth() + 1).toString(), //月
+		},
+		{
+			l:"d+",
+			r:d.getDate().toString() , //日
+		},
+		{
+			l:"H+",
+			r:d.getHours().toString(), //小時
+		},
+		{
+			l:"M+",
+			r:d.getMinutes().toString(), //分
+		},
+		{
+			l:"S+",
+			r:d.getSeconds().toString(), //秒
+		},
+	]
+
+	if (/(y+)/.test(fmt)) {
+		fmt = fmt.replace(RegExp.$1,
+			(d.getFullYear() + "").substr(4 - RegExp.$1.length)
+		);
+	}
+	for (let i=0;i<o.length;i++) {
+		let node = o[i];
+		if (new RegExp("(" + node.l + ")").test(fmt)) {
+			fmt = fmt.replace(RegExp.$1,
+				(RegExp.$1.length == 1) ? (node.r) : (("00" + node.r).substr(("" + node.r).length))
+			);
+		}
+	}
+	return fmt;
+};

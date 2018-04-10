@@ -49,4 +49,22 @@ define(["king/strings"], function() {
         str = "zuiwuchang@.kl.1.com"
         assert.equal(strings.MatchGMail(str),rs.BadHost,"BadHost " + str);
     });
+    QUnit.test("crypto html", function( assert ) {
+        assert.equal(strings.HtmlEncode(""),"",'HtmlEncode("")');
+        assert.equal(strings.HtmlDecode(""),"",'HtmlDecode("")');
+    
+        var old = "include <iostream>\n\'-\"";
+        var ok = "include&nbsp;&lt;iostream&gt;\n&#39;-&quot;"
+        var en = strings.HtmlEncode(old);
+        assert.equal(en,ok,"HtmlEncode " + old);
+        var dec = strings.HtmlDecode(en);
+        assert.equal(en,ok,"HtmlDecode " + en);
+    });
+    QUnit.test("crypto html", function( assert ) {
+        const format = "2006-01-02 15:04:05"
+        let d = new Date(2006,1-1,2,15,4,5)
+        let layout = "yyyy-mm-dd HH:MM:SS"
+        let str = strings.FormatDate(d,layout)
+        assert.equal(str,format,format+ " "+str);
+    });
 });
